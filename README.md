@@ -8,3 +8,4 @@ https://arxiv.org/abs/1706.03762
 
 1. https://github.com/tunz/transformer-pytorch
 2. https://github.com/jadore801120/attention-is-all-you-need-pytorch
+3. https://github.com/d2l-ai/d2l-en

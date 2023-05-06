@@ -28,7 +28,7 @@ class MultiHeadAttention(nn.Module):
 
         self.attention = ScaledDotProductAttention()
 
-    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
+    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, mask: torch.Tensor=None) -> torch.Tensor:
         # Instead of performing a single attention function with dmodel-dimensional keys, values and queries,
         # we found it beneficial to linearly project the queries, keys and values h times with different, learned
         # linear projections to dk, dk and dv dimensions, respectively. On each of these projected versions of
@@ -38,6 +38,7 @@ class MultiHeadAttention(nn.Module):
         # q: query, (batch_size, input_seq_lenth, d_k)
         # k: key, (batch_size, input_seq_lenth, d_k)
         # v: value, (batch_size, input_seq_lenth, d_v)
+        # mask: (batch_size, input_seq_length)
         # output: (batch_size, input_seq_lenth, d_v)
 
         batch_size = q.size(0)
@@ -61,7 +62,7 @@ class MultiHeadAttention(nn.Module):
         projected_v = projected_v.transpose(1, 2)
 
         # attention: (batch_size, num_heads, input_seq_length, d_v)
-        attention = self.attention(projected_q, projected_k, projected_v)
+        attention = self.attention(projected_q, projected_k, projected_v, mask=mask)
 
         # swap attention dimensions
         # attention: (batch_size, input_seq_length, num_heads, d_v)
