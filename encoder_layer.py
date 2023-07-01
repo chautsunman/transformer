@@ -7,9 +7,10 @@ from multi_head_attention import MultiHeadAttention
 from position_wise_feed_foward import PositionWiseFeedForward
 
 class EncoderLayer(nn.Module):
-    def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout_prob: float):
+    def __init__(self, name: str, d_model: int, num_heads: int, d_ff: int, dropout_prob: float):
         super().__init__()
 
+        self.name = name
         # d_model = 512
         self.d_model = d_model
         # num_heads = 8
