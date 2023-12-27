@@ -18,7 +18,7 @@ class Encoder(nn.Module):
         self.encoder_layers = nn.ModuleList([EncoderLayer(f"encoder_{i}", d_model, num_heads, d_ff, dropout_prob) for i in range(num_encoders)])
 
     def forward(self, x):
-        # x: (batch_size, output_seq_length)
+        # x: (batch_size, input_seq_length)
         y = x
 
         y = self.embedding_layer(y)
