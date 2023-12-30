@@ -11,14 +11,10 @@ class DecoderLayer(nn.Module):
         super().__init__()
 
         self.name = name
-        # d_model = 512
-        self.d_model = d_model
-        # num_heads = 8
-        self.num_heads = num_heads
-        # d_ff = 2048
-        self.d_ff = d_ff
-        # dropout_prob = 0.1
-        self.dropout_prob = dropout_prob
+        self.d_model = d_model  # original paper = 512
+        self.num_heads = num_heads  # original paper = 8
+        self.d_ff = d_ff  # original paper = 2048
+        self.dropout_prob = dropout_prob  # original paper = 0.1
 
         self.decoder_multi_head_attention = MultiHeadAttention(d_model, num_heads)
         self.decoder_multi_head_attention_dropout = nn.Dropout(dropout_prob)

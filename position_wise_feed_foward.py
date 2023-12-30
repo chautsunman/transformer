@@ -7,9 +7,8 @@ class PositionWiseFeedForward(nn.Module):
     def __init__(self, d_model: int, d_ff: int):
         super().__init__()
 
-        # d_model = 512, d_ff = 2048
-        self.d_model = d_model
-        self.d_ff = d_ff
+        self.d_model = d_model  # original paper = 512
+        self.d_ff = d_ff  # original paper = 2048
 
         self.linear_1_func = nn.Linear(d_model, d_ff)
         self.relu_func = nn.ReLU()

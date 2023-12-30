@@ -9,13 +9,10 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, d_model: int, num_heads: int):
         super().__init__()
 
-        # d_model = 512
-        self.d_model = d_model
-        # num_heads = 8
-        self.num_heads = num_heads
-        # dk = dv = dmodel/h = 64
-        self.d_k = d_model / num_heads
-        self.d_v = d_model / num_heads
+        self.d_model = d_model  # original paper = 512
+        self.num_heads = num_heads  # original paper = 8
+        self.d_k = d_model / num_heads  # original paper = dmodel/h = 64
+        self.d_v = d_model / num_heads  # original paper = dmodel/h = 64
 
         # 512 --> 512 linear projection
         # combined all 8 heads weight matrixes, separate into multiple heads during calculation
@@ -29,6 +26,7 @@ class MultiHeadAttention(nn.Module):
         self.attention = ScaledDotProductAttention()
 
     def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, mask: torch.Tensor=None) -> torch.Tensor:
+        # original paper:
         # Instead of performing a single attention function with dmodel-dimensional keys, values and queries,
         # we found it beneficial to linearly project the queries, keys and values h times with different, learned
         # linear projections to dk, dk and dv dimensions, respectively. On each of these projected versions of

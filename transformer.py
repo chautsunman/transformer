@@ -7,6 +7,20 @@ from encoder import Encoder
 from decoder import Decoder
 
 class Transformer(nn.Module):
+    @staticmethod
+    def get_default_transformer(vocab_size: int, target_vocab_size: int):
+        # values from original paper
+        return Transformer(
+            vocab_size=vocab_size,
+            target_vocab_size=target_vocab_size,
+            d_model=512,
+            num_heads=8,
+            d_ff=2048,
+            dropout_prob=0.1,
+            num_encoders=6,
+            num_decoders=6
+        )
+
     def __init__(self, vocab_size: int, target_vocab_size: int, d_model: int, num_heads: int, d_ff: int, dropout_prob: float, num_encoders: int, num_decoders: int):
         super().__init__()
 

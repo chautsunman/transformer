@@ -8,8 +8,7 @@ class PositionEncoding(nn.Module):
         super().__init__()
 
         self.input_seq_length = input_seq_length
-        # d_embedding = 512
-        self.d_embedding = d_embedding
+        self.d_embedding = d_embedding  # original paper = 512
 
         self.position_encoding_matrix = torch.zeros((input_seq_length, d_embedding))
 

@@ -10,8 +10,7 @@ class Encoder(nn.Module):
     def __init__(self, vocab_size: int, d_model: int, num_heads: int, d_ff: int, dropout_prob: float, num_encoders: int):
         super().__init__()
 
-        # num_encoders = 6
-        self.num_encoders = num_encoders
+        self.num_encoders = num_encoders  # original paper = 6
 
         self.embedding_layer = nn.Embedding(vocab_size, d_model)
         self.position_embedding_layer = PositionEncoding(vocab_size, d_model)
