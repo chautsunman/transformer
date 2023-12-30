@@ -24,9 +24,9 @@ class ScaledDotProductAttention(nn.Module):
         # output: (batch_size, input_seq_lenth, input_seq_length) or (batch_size, num_heads, input_seq_lenth, input_seq_length)
         d_k = q.size(dim=0)
         output = output / math.sqrt(d_k)
-        # mask output to not attend
+        # mask output to not attend (True --> attend, False --> not attend)
         if mask is not None:
-            output = output.masked_fill(mask, neg_inf)
+            output = output.masked_fill(~mask, neg_inf)
         output = F.softmax(output)
         attention_matrix = output
         output = torch.matmul(output, v)

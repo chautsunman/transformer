@@ -43,6 +43,11 @@ class Transformer(nn.Module):
         self.final_layer = nn.Linear(target_vocab_size)
 
     def forward(self, context, x):
+        # context: (batch_size, seq_length), e.g. lang1 (machine translation)
+        # x: (batch_size, seq_length), e.g. lang2 (machine translation)
+
+        curr_tgt_idx = x.size(dim=1)
+
         encoder_output = self.encoder(context)
         # (batch_size, seq_length, d_model)
 
