@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 
 from decoder_layer import DecoderLayer
-from position_encoding import PositionalEncoding
+from position_encoding import PositionalEmbedding
 
 class Decoder(nn.Module):
     def __init__(self, vocab_size: int, d_model: int, num_heads: int, d_ff: int, dropout_prob: float, num_decoders: int, input_seq_length: int):
@@ -12,7 +12,7 @@ class Decoder(nn.Module):
 
         self.num_decoders = num_decoders  # original paper = 6
 
-        self.positional_embedding = PositionalEncoding(vocab_size, input_seq_length, d_model)
+        self.positional_embedding = PositionalEmbedding(vocab_size, input_seq_length, d_model)
         self.dropout = nn.Dropout(dropout_prob)
         self.decoder_layers = nn.ModuleList([DecoderLayer(f"decoder_{i}", d_model, num_heads, d_ff, dropout_prob) for i in range(num_decoders)])
 

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 
 from encoder_layer import EncoderLayer
-from position_encoding import PositionalEncoding
+from position_encoding import PositionalEmbedding
 
 class Encoder(nn.Module):
     def __init__(self, vocab_size: int, d_model: int, num_heads: int, d_ff: int, dropout_prob: float, num_encoders: int, input_seq_length: int):
@@ -12,7 +12,7 @@ class Encoder(nn.Module):
 
         self.num_encoders = num_encoders  # original paper = 6
 
-        self.positional_embedding = PositionalEncoding(vocab_size, input_seq_length, d_model)
+        self.positional_embedding = PositionalEmbedding(vocab_size, input_seq_length, d_model)
         self.dropout = nn.Dropout(dropout_prob)
         self.encoder_layers = nn.ModuleList([EncoderLayer(f"encoder_{i}", d_model, num_heads, d_ff, dropout_prob) for i in range(num_encoders)])
 

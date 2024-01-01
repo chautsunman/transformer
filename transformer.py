@@ -30,7 +30,8 @@ class Transformer(nn.Module):
             num_heads=num_heads,
             d_ff=d_ff,
             dropout_prob=dropout_prob,
-            num_encoders=num_encoders
+            num_encoders=num_encoders,
+            input_seq_length=2048
         )
         self.decoder = Decoder(
             vocab_size=vocab_size,
@@ -38,15 +39,14 @@ class Transformer(nn.Module):
             num_heads=num_heads,
             d_ff=d_ff,
             dropout_prob=dropout_prob,
-            num_decoders=num_decoders
+            num_decoders=num_decoders,
+            input_seq_length=2048
         )
-        self.final_layer = nn.Linear(target_vocab_size)
+        self.final_layer = nn.Linear(d_model, target_vocab_size)
 
     def forward(self, context, x):
         # context: (batch_size, seq_length), e.g. lang1 (machine translation)
         # x: (batch_size, seq_length), e.g. lang2 (machine translation)
-
-        curr_tgt_idx = x.size(dim=1)
 
         encoder_output = self.encoder(context)
         # (batch_size, seq_length, d_model)

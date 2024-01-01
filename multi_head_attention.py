@@ -11,8 +11,8 @@ class MultiHeadAttention(nn.Module):
 
         self.d_model = d_model  # original paper = 512
         self.num_heads = num_heads  # original paper = 8
-        self.d_k = d_model / num_heads  # original paper = dmodel/h = 64
-        self.d_v = d_model / num_heads  # original paper = dmodel/h = 64
+        self.d_k = int(d_model / num_heads)  # original paper = dmodel/h = 64
+        self.d_v = int(d_model / num_heads)  # original paper = dmodel/h = 64
 
         # 512 --> 512 linear projection
         # combined all 8 heads weight matrixes, separate into multiple heads during calculation

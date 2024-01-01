@@ -24,9 +24,8 @@ class PositionEncoding(nn.Module):
 
         # x_matrix = (input_seq_length, d_embedding)
         x_matrix = input_seq_arr / embedding_arr
-
-        self.position_encoding_matrix[:, 0::2] = torch.sin(x_matrix)
-        self.position_encoding_matrix[:, 1::2] = torch.cos(x_matrix)
+        self.position_encoding_matrix[:, 0::2] = torch.sin(x_matrix[:, 0::2])
+        self.position_encoding_matrix[:, 1::2] = torch.cos(x_matrix[:, 1::2])
 
     def forward(self, x):
         # x: (batch_size, input_seq_length, d_embedding)
