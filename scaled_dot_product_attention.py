@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-neg_inf = 1e-9
+neg_inf = -1e9
 
 class ScaledDotProductAttention(nn.Module):
     def __init__(self):
@@ -26,7 +26,7 @@ class ScaledDotProductAttention(nn.Module):
         output = output / math.sqrt(d_k)
         # mask output to not attend (True --> attend, False --> not attend)
         if attention_mask is not None:
-            output = output.masked_fill(~attention_mask, neg_inf)
+            output = output + (1.0 - attention_mask.int()) * neg_inf
         output = F.softmax(output)
         attention_matrix = output
         output = torch.matmul(output, v)
