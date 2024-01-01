@@ -38,7 +38,7 @@ class CrossAttention(BaseAttention):
 
 class CausalSelfAttention(BaseAttention):
     def forward(self, x):
-        y = self.multi_head_attention(x, x, x)
+        y = self.multi_head_attention(x, x, x, True)
         y = self.dropout(y)
         y = x + y
         y = self.layer_norm(y)

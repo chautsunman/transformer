@@ -10,7 +10,7 @@ class ScaledDotProductAttention(nn.Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, mask: torch.Tensor=None) -> torch.Tensor:
+    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, attention_mask: torch.Tensor=None) -> torch.Tensor:
         # An attention function can be described as mapping a query and a set of key-value pairs to an output,
         # where the query, keys, values, and output are all vectors.
 
@@ -25,8 +25,8 @@ class ScaledDotProductAttention(nn.Module):
         d_k = q.size(dim=0)
         output = output / math.sqrt(d_k)
         # mask output to not attend (True --> attend, False --> not attend)
-        if mask is not None:
-            output = output.masked_fill(~mask, neg_inf)
+        if attention_mask is not None:
+            output = output.masked_fill(~attention_mask, neg_inf)
         output = F.softmax(output)
         attention_matrix = output
         output = torch.matmul(output, v)

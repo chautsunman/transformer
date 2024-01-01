@@ -25,7 +25,7 @@ class MultiHeadAttention(nn.Module):
 
         self.attention = ScaledDotProductAttention()
 
-    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, mask: torch.Tensor=None) -> torch.Tensor:
+    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, use_causal_mask: bool=False) -> torch.Tensor:
         # original paper:
         # Instead of performing a single attention function with dmodel-dimensional keys, values and queries,
         # we found it beneficial to linearly project the queries, keys and values h times with different, learned
@@ -36,8 +36,10 @@ class MultiHeadAttention(nn.Module):
         # q: query, (batch_size, input_seq_lenth, d_k)
         # k: key, (batch_size, input_seq_lenth, d_k)
         # v: value, (batch_size, input_seq_lenth, d_v)
-        # mask: (batch_size, input_seq_length)
+        # use_causal_mask: whether to apply a causal mask to prevent tokens from attending to future tokens
         # output: (batch_size, input_seq_lenth, d_v)
+
+        attention_mask = self._compute_attention_mask(q, k, v, use_causal_mask)
 
         batch_size = q.size(0)
 
@@ -60,7 +62,7 @@ class MultiHeadAttention(nn.Module):
         projected_v = projected_v.transpose(1, 2)
 
         # attention: (batch_size, num_heads, input_seq_length, d_v)
-        attention = self.attention(projected_q, projected_k, projected_v, mask=mask)
+        attention = self.attention(projected_q, projected_k, projected_v, attention_mask=attention_mask)
 
         # swap attention dimensions
         # attention: (batch_size, input_seq_length, num_heads, d_v)
@@ -76,3 +78,22 @@ class MultiHeadAttention(nn.Module):
         multi_head_attention = attention_projection
 
         return multi_head_attention
+
+    def _compute_attention_mask(self, q, k, v, use_causal_mask):
+        attention_mask = None
+        if use_causal_mask:
+            attention_mask = self._compute_causal_mask(q)
+        return attention_mask
+
+    def _compute_causal_mask(self, q):
+        # usage: attention mask (True --> attend, False --> not attend)
+        # e.g. q: (batch_size, num_heads, input_seq_length=4, d_k)
+        # output:
+        # [[[[True, False, False, False],
+        #    [True, True,  False, False],
+        #    [True, True,  True,  False],
+        #    [True, True,  True,  True]]]]
+        ones_mask = torch.ones(1, 1, q.size(dim=2), q.size(dim=2))
+        row_idxs = torch.cumsum(ones_mask, dim=-2)
+        col_idxs = torch.cumsum(ones_mask, dim=-1)
+        return row_idxs > col_idxs
