@@ -3,8 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from multi_head_attention import MultiHeadAttention
-from position_wise_feed_foward import PositionWiseFeedForward
+from attention_layer import CausalSelfAttention, CrossAttention
+from feed_forward_layer import FeedForwardLayer
 
 class DecoderLayer(nn.Module):
     def __init__(self, name: str, d_model: int, num_heads: int, d_ff: int, dropout_prob: float):
@@ -16,42 +16,12 @@ class DecoderLayer(nn.Module):
         self.d_ff = d_ff  # original paper = 2048
         self.dropout_prob = dropout_prob  # original paper = 0.1
 
-        self.decoder_multi_head_attention = MultiHeadAttention(d_model, num_heads)
-        self.decoder_multi_head_attention_dropout = nn.Dropout(dropout_prob)
-        self.decoder_multi_head_attention_layer_norm = nn.LayerNorm(d_model)
+        self.causal_self_attention = CausalSelfAttention(d_model, num_heads, dropout_prob)
+        self.cross_attention = CrossAttention(d_model, num_heads, dropout_prob)
+        self.ff = FeedForwardLayer(d_model, d_ff, dropout_prob)
 
-        self.encoder_multi_head_attention = MultiHeadAttention(d_model, num_heads)
-        self.encoder_multi_head_attention_dropout = nn.Dropout(dropout_prob)
-        self.encoder_multi_head_attention_layer_norm = nn.LayerNorm(d_model)
-
-        self.ff = PositionWiseFeedForward(d_model, d_ff)
-        self.ff_dropout = nn.Dropout(dropout_prob)
-        self.ff_layer_norm = nn.LayerNorm(d_model)
-
-    def forward(self, decoder_input, encoder_output, decoder_mask):
-        y = self._forward_decoder_attention(decoder_input, decoder_mask)
-        y = self._forward_encoder_attention(decoder_input, encoder_output)
-        y = self._forward_ff(y)
-        return y
-
-    def _forward_decoder_attention(self, decoder_input, decoder_mask):
-        y = self.decoder_multi_head_attention(decoder_input, decoder_input, decoder_input, mask=decoder_mask)
-        y = self.decoder_multi_head_attention_dropout(y)
-        y = decoder_input + y
-        y = self.decoder_multi_head_attention_layer_norm(y)
-        return y
-
-    def _forward_encoder_attention(self, decoder_input, encoder_output):
-        # query = encoder_output
-        y = self.encoder_multi_head_attention(encoder_output, decoder_input, decoder_input)
-        y = self.encoder_multi_head_attention_dropout(y)
-        y = decoder_input + y
-        y = self.encoder_multi_head_attention_layer_norm(y)
-        return y
-
-    def _forward_ff(self, x):
-        y = self.ff(x)
-        y = self.ff_dropout(y)
-        y = x + y
-        y = self.ff_layer_norm(y)
+    def forward(self, decoder_input, encoder_output):
+        y = self.causal_self_attention(decoder_input)
+        y = self.cross_attention(y, encoder_output)
+        y = self.ff(y)
         return y

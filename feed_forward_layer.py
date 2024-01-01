@@ -22,3 +22,18 @@ class PositionWiseFeedForward(nn.Module):
         # y: (batch_size, d_model)
         y = self.linear_2_func(x)
         return y
+
+class FeedForwardLayer(nn.Module):
+    def __init__(self, d_model: int, d_ff: int, dropout_prob: float):
+        super().__init__()
+
+        self.ff = PositionWiseFeedForward(d_model, d_ff)
+        self.ff_dropout = nn.Dropout(dropout_prob)
+        self.ff_layer_norm = nn.LayerNorm(d_model)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        y = self.ff(x)
+        y = self.ff_dropout(y)
+        y = x + y
+        y = self.ff_layer_norm(y)
+        return y
