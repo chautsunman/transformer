@@ -42,6 +42,9 @@ class PositionalEmbedding(nn.Module):
     def __init__(self, vocab_size: int, input_seq_length: int, d_model: int, scale_embedding: bool=True):
         super().__init__()
 
+        self.d_model = d_model
+        self.scale_embedding = scale_embedding
+
         self.embedding_layer = nn.Embedding(vocab_size, d_model)
         self.position_embedding_layer = PositionEncoding(input_seq_length, d_model)
 

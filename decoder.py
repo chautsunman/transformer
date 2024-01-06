@@ -16,7 +16,7 @@ class Decoder(nn.Module):
         self.dropout = nn.Dropout(dropout_prob)
         self.decoder_layers = nn.ModuleList([DecoderLayer(f"decoder_{i}", d_model, num_heads, d_ff, dropout_prob) for i in range(num_decoders)])
 
-    def forward(self, decoder_input, encoder_output, decoder_mask):
+    def forward(self, decoder_input, encoder_output):
         # x: (batch_size, output_seq_length)
         y = decoder_input
 
@@ -26,7 +26,7 @@ class Decoder(nn.Module):
         y = self.dropout(y)
 
         for layer in self.decoder_layers:
-            y = layer(y, encoder_output, decoder_mask)
+            y = layer(y, encoder_output)
         # (batch_size, input_seq_length, d_model)
 
         return y

@@ -20,7 +20,8 @@ class ScaledDotProductAttention(nn.Module):
         # mask: (batch_size, input_seq_length)
         # output: (batch_size, input_seq_lenth, d_v) or (batch_size, num_heads, input_seq_lenth, d_v)
 
-        output = torch.matmul(q, k.transpose())
+        k_transpose = k.transpose(-1, -2)
+        output = torch.matmul(q, k_transpose)
         # output: (batch_size, input_seq_lenth, input_seq_length) or (batch_size, num_heads, input_seq_lenth, input_seq_length)
         d_k = q.size(dim=0)
         output = output / math.sqrt(d_k)
